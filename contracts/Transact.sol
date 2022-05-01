@@ -13,19 +13,19 @@ contract LeafSend {
     event TransferComplete(uint weiSent);
 
     // Check to make sure we have minimum Ether for transfer
-    modifier minEthCheck {
-        require(msg.value >= minimumEth, "Not enough eth sent!");
+    modifier minEthCheck(uint _value) {
+        require(_value >= minimumEth, "Not enough eth sent!");
         _;
     }
 
     // Recieve ether and send it to address
-    function sendEth(address payable _sendTo) 
+    function sendEth(address payable _sendTo, uint _value) 
     public payable
-    minEthCheck {
+    minEthCheck(_value) {
         address sender = msg.sender;
-        (bool success, ) = _sendTo.call{value: msg.value}("");
+        (bool success, ) = _sendTo.call{value: _value}("");
         require(success, "Sending eth failed.");
-        amountSentTotal[sender][_sendTo] = msg.value;
-        emit TransferComplete(msg.value);
+        amountSentTotal[sender][_sendTo] = _value;
+        emit TransferComplete(_value);
     }
 }
